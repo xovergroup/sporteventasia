@@ -5,7 +5,7 @@ class CRUD {
     private $database = null;
     private $imploded;
         
-    public $sql, $status, $result, $total, $countResult, $table, $data, $id, $condition, $identifier;
+    public $sql, $status, $result, $total, $countResult, $table, $data, $id, $condition, $conditionColumn, $lastInsertId;
     
     /* ------------------------------------ MISC ------------------------------------ */
     public function __construct($database) {
@@ -49,42 +49,63 @@ class CRUD {
         return $var;
     }
     
-    public function unsetAction($array){
+    public function setCondition($array, $condition){
         
-        unset($array['action']);
+        $cols = $this->explodedArray($condition);
         
-        return $array;
+        $x = 1;
+        $condition = " WHERE ";
+        foreach($cols as $col){
+            
+            foreach($array as $key => $value) {
+                if(strpos( $key, $col ) === 0 ) {
+                    $condition .= $this->sanitizeStringV2($key) . " = '" . $this->sanitizeStringV2($array[$key])."'";
+                }
+            }
+            if($x < count($cols)) {
+                $condition .= " AND ";
+            }
+            $x++;
+        }
         
+        return $condition;
     }
     
     public function unsetKeyValue($array, $key){
         
         unset($array[$key]);
-        
         return $array;
         
     }
     
-    public function removeFirstKeyValue($array){
+    public function addKeyValue($array, $key, $value){
         
-        $key = key($array);
-        unset($array[$key]);
+        $array[$key] = $value;
         
         return $array;
     }
     
-    public function firstKeyValue($array){
+    public function getValueFromArray($array, $key){
         
-        $data["key"] = key($array);
-        $data["value"] = reset($array);
+        if(array_key_exists($key, $array)) {
+            $data = $array[$key];
+        }
         
         return $data;
     }
     
-    public function condition($array){
+    public function getKeyValueRelated($array, $prefix_or_suffix){
         
-        $condition = " WHERE ".$array["key"]." = '".$array["value"]."'";
-        return $condition;
+        $data = array();
+        foreach( $array as $key => $value ) {
+            if(strpos($key, $prefix_or_suffix) === 0 ) {
+                
+                $data[$key] = $value;
+                
+            }
+        }
+        
+        return $data;
     }
     
     public function addDateTime($array, $indexName){
@@ -94,7 +115,6 @@ class CRUD {
         $array[$indexName]  = $dateTimeToday;
         
         return $array;
-        
     }
     
     private function implodedArray($cols) {
@@ -103,10 +123,51 @@ class CRUD {
         return $imploded;
     }
     
+    private function explodedArray($cols) {
+        
+        $exploded = explode(", ", $cols);
+        return $exploded;
+    }
+    
+    public function getFileExtension($file_name){
+        
+        $type = pathinfo($file_name, PATHINFO_EXTENSION);
+        $type = strtolower($type);
+        return $type;
+    }
+    
+    public function uploadFile($path, $file_information, $prefix) {
+        
+        $allowed_files = array("png", "jpg", "pdf");
+        
+        $check = $this->getFileExtension($file_information["name"]);
+        
+        if(in_array($check, $allowed_files)){
+            
+            $datetime = date("YmdHis");
+
+            $uploaddir = $path;
+            $file_name = $prefix.$datetime."_".basename($file_information['name']);
+            $uploadfile = $uploaddir.$file_name;
+            if(move_uploaded_file($file_information['tmp_name'], $uploadfile)) {
+
+                $data["status"] = true;
+                $data["filename"] = $file_name;
+            } else {
+                $data["status"] = false;
+            }
+        } else {
+            $data["status"] = false;
+            $data["msg"] = "File Format Not Allowed";
+        }
+
+        return $data;
+    }
+    
     /* ------------------------------------ MAIN ------------------------------------ */
     public function create(){
         
-        if(isset($this->table) && !empty($this->table)){
+        if(isset($this->table) && !empty($this->table) && isset($this->data)){
             
             $columns    = $this->implodedArray(array_keys($this->data));
             $values     = '';
@@ -125,9 +186,11 @@ class CRUD {
             $result = $this->database->query($sql);
             
             if($result) {
-                $this->status   = "Success";
-                $this->sql      = $sql;
-                $this->result   = $result;
+                $this->status       = "Success";
+                $this->sql          = $sql;
+                $this->result       = $result;
+                $this->lastInsertId = $this->database->insert_id;
+                
 
             } else {
 
@@ -136,31 +199,25 @@ class CRUD {
                 $this->result       = "Query Failed";
 
             }
-            
-            
         }
-    
-        
     }
     
     public function update(){
         
-        if(isset($this->table) && !empty($this->table)){
+        if(isset($this->table) && !empty($this->table) && isset($this->data) && isset($this->condition)){
             
             $columns = '';
             $x = 1;
             foreach($this->data as $key => $value){
                 
-                $columns .= $key." = '".$this->sanitizeStringV2($value)." '";
+                $columns .= $this->sanitizeStringV2($key)." = '".$this->sanitizeStringV2($value)." '";
                 if($x < count($this->data)){
                     $columns .= ", ";
                 }
                 $x++;
             }
             
-            $condition = $this->condition($this->identifier);
-            
-            $sql = "UPDATE ".$this->table." SET ".$columns." ".$condition;
+            $sql = "UPDATE ".$this->table." SET ".$columns." ".$this->condition;
 
             $result = $this->database->query($sql);
 
@@ -175,21 +232,17 @@ class CRUD {
                 $this->sql          = $sql;
                 $this->result       = "Failed";
             }
-            
-         
-            
         }
     }
     
     public function delete(){
         
-        if(isset($this->table) && !empty($this->table)){
+        if(isset($this->table) && !empty($this->table) && isset($this->id) && isset($this->conditionColumn)){
             
+            $id = $this->sanitizeStringV2($this->id);
+            $column = $this->sanitizeStringV2($this->conditionColumn);
             
-            $column = $this->implodedArray(array_keys($this->data));
-            $id     = intval($this->implodedArray(array_values($this->data)));
-            
-            $sql    = "DELETE FROM ".$this->table." WHERE ".$column." = ".$id;
+            $sql    = "DELETE FROM ".$this->table." WHERE ".$column." = '".$id."'";
             $result =  $this->database->query($sql);
 
             if($result) {
