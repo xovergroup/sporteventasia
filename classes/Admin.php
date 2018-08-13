@@ -8,7 +8,7 @@ class Admin {
     private $table = "admins";
     private $col_username = "admin_username";
         
-    public $sql, $status, $result, $total, $countResult, $data, $id, $condition, $conditionColumn;
+    public $sql, $status, $result, $total, $countResult, $data, $id, $condition, $conditionColumn, $username, $password;
     
     /* ------------------------------------ MISC ------------------------------------ */
     public function __construct($database) {
@@ -30,10 +30,7 @@ class Admin {
         
         if(isset($this->username) && isset($this->password)) {
            
-            $username = $this->sanitizeStringV2($this->username);
-            $password = $this->sanitizeStringV2($this->password);
-            
-            $sql = "SELECT * FROM ".$this->table." WHERE ".$this->$col_username." = '".$username."' ";
+            $sql = "SELECT * FROM ".$this->table." WHERE ".$this->$col_username." = '".$this->username."' ";
             $result = $this->database->query($sql);
             if($result->num_rows > 0){
                 
@@ -42,7 +39,7 @@ class Admin {
                     $salt                   = $row->admin_salt;
                     $db_encrypted_password  = $row->admin_password;
 
-                    if(password_verify($password.$salt, $db_encrypted_password)){
+                    if(password_verify($this->password.$salt, $db_encrypted_password)){
 
                         $_SESSION["admin_id"]       = $row->admin_id;
                         $_SESSION["admin_username"] = $row->admin_username; 
@@ -75,9 +72,8 @@ class Admin {
         
         if(isset($this->username)) {
             
-            $username = $this->database->real_escape_string($this->sanitizeStringV2($this->username));
             
-            $sql = "SELECT COUNT(admin_id) AS total FROM ".$this->table." WHERE admin_username = '".$username."' ";
+            $sql = "SELECT COUNT(admin_id) AS total FROM ".$this->table." WHERE admin_username = '".$this->username."' ";
             $result = $this->database->query($sql);
             
             if($result) {

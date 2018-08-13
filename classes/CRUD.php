@@ -136,9 +136,9 @@ class CRUD {
         return $type;
     }
     
-    public function uploadFile($path, $file_information, $prefix) {
+    public function uploadFile($path, $file_information, $prefix, $ext) {
         
-        $allowed_files = array("png", "jpg", "pdf");
+        $allowed_files = $this->explodedArray($ext);
         
         $check = $this->getFileExtension($file_information["name"]);
         
@@ -152,9 +152,12 @@ class CRUD {
             if(move_uploaded_file($file_information['tmp_name'], $uploadfile)) {
 
                 $data["status"] = true;
+                $data["msg"] = "File transfer success";
                 $data["filename"] = $file_name;
+                
             } else {
                 $data["status"] = false;
+                $data["msg"] = "File transfer failed";
             }
         } else {
             $data["status"] = false;
