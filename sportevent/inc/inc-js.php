@@ -1,0 +1,9 @@
+<script src="libs/fontawesome/all.js"></script>
+<script src="libs/swiper/js/swiper.min.js"></script>
+<script src="libs/jquery/jquery-3.3.1.min.js"></script>
+<script src="libs/jquery/jquery-ui.min.js"></script>
+<script src="libs/quilljs/quill.js"></script>
+<script src="libs/sweetalert2/sweetalert2.min.js"></script>
+<script src="libs/jqueryvalidate/jquery.validate.min.js"></script>
+<script src="libs/jqueryvalidate/additional-methods.js"></script>
+<script src="libs/intlTelInput/js/intlTelInput.min.js"></script>

@@ -1,0 +1,150 @@
+@charset "utf-8";
+/* CSS Document */
+
+
+@font-face {
+    font-family: 'DAGGERSQUARE';
+	src: local('../../organizer/fonts/DAGGERSQUARE'), url('../../organizer/fonts/DAGGERSQUARE.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Avenir-book';
+	src: local('../../organizer/fonts/DAGGERSQUARE'), url('../../organizer/fonts/DAGGERSQUARE.otf') format('opentype');
+}
+.org-login-logo{
+	width:20%;
+	display:block;
+	margin:0 auto;
+	padding:5% 0% 3%;
+}
+
+.org-login-logo img{
+	width:100%;
+}
+
+#org-login-form{
+	width:40%;
+	background:white;
+	padding:2%;
+	margin:0 auto;
+	display:block;
+	border-top:3px solid #e44836;	
+}
+
+#org-login-form label{
+	display:block;
+	margin:1% 0%;
+	font-size:12px;
+}
+
+#org-login-form input{
+	display:block;
+	width:93%;
+	padding:2%;
+	margin:1% 0%;
+}
+
+#org-login-form h2{
+	 font-family: 'DAGGERSQUARE';
+	 text-align:center;
+}
+
+.org-login-button{
+    background-color: #e44836;
+    border: none;
+    padding: 12px 30px;
+    color: white;
+    cursor: pointer;
+    width: 98%;
+	margin:4% 0%;
+    font-family: 'DAGGERSQUARE';
+    font-size: 15px;
+}
+.dropdown-container{
+	display:none;	
+}
+
+.dropdown-container a{
+	margin-left:5%;	
+	font-size:14px;
+}
+
+.sidebar ul{
+	height:85vh;
+	overflow:scroll;	
+	margin-top:2%;
+}
+
+.sidebar ul::-webkit-scrollbar {
+	width: 4px;
+}
+ 
+.sidebar ul::-webkit-scrollbar-thumb {
+	background: #E9E9E9 !important; 
+	border-radius:6px;
+}
+
+.bg-trans{
+	background:transparent !important;	
+}
+
+.btn-red{
+	font-size:16px !important;	
+}
+
+.table-responsive::-webkit-scrollbar {
+	height: 5px;
+}
+
+#user-upload-label{
+    padding: 10px;
+	background:white;
+    border: 2px solid #e33f2c; 
+    display: table;
+    color: #e33f2c;
+}
+
+.user-upload-btn{
+    display: none;
+}
+
+.btn-red-outline{
+    background: white;
+    border-radius: 5px;
+    padding: 0.6rem 2rem;
+    color: #e04e3d!important;
+    display: inline-block;
+    text-align: center;
+    border: none;
+    border: 2px solid #e04e3d;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 1%;	
+}
+
+.search-input-group input{
+	background:whitesmoke;	
+}
+
+.search-input-group .input-group-addon{
+	margin-left:-35px;
+	z-index:1;
+}
+.search-input-group .form-control{
+	box-shadow:0 0 0; 
+	border-color:white;
+	border-radius:5px !important;
+	flex: none;
+    width: 100% !important;
+}
+
+.search-input-group button{
+    border:0;
+    background:transparent;
+	margin-top: 3px;
+}
+
+.modal-inner{
+	height:250px;
+	overflow:scroll;	
+}
